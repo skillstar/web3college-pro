@@ -1,94 +1,26 @@
 "use client";
-import { Address } from "viem";
-import {
-  useAccount,
-  useConnect,
-  useDisconnect,
-  useBalance,
-  useSwitchChain,
-} from "wagmi";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useState, useEffect } from "react";
-import { SentETHButton } from "./components/SentETH";
-import { TokenButton } from "./components/MintToken";
+import Header from "@/app/components/header";
+import BuySection from "@/components/BuySection";
+import CourseList from "@/app/components/CourseList";
+import Footer from "@/app/components/Footer";
+import ThreeCanvas from "@/components/ThreeCanvas";
 
 function App() {
-  const account = useAccount();
-  const [userAddress, setUserAddress] = useState("");
-  const { connectors, connect, status, error } = useConnect();
-  const { disconnect } = useDisconnect();
-
-  const { chains, switchChain } = useSwitchChain();
-
-  //查询余额，需要钱包地址
-  const { data: userBalance } = useBalance({
-    address: userAddress as Address,
-  });
-  //监控钱包账户
-  useEffect(() => {
-    if (account && account.address) {
-      setUserAddress(account.address);
-    } else {
-      setUserAddress("");
-    }
-  }, [account]);
   return (
-    <>
-      <div>
-        <h2>Account</h2>
-
-        <div>
-          status: {account.status}
-          <br />
-          addresses: {JSON.stringify(account.addresses)}
-          <br />
-          chainId: {account.chainId}
-          <br />
-          balance: {userBalance?.formatted}
-          {userBalance?.symbol}
-        </div>
-
-        {account.status === "connected" && (
-          <button type="button" onClick={() => disconnect()}>
-            Disconnect
-          </button>
-        )}
-      </div>
-      <div>
-        <ConnectButton></ConnectButton>
-      </div>
-
-      <div>
-        {chains.map((chain) => (
-          <button
-            key={chain.id}
-            onClick={() => switchChain({ chainId: chain.id })}
-          >
-            {chain.name}
-          </button>
-        ))}
-      </div>
-
-      <hr></hr>
-      <SentETHButton></SentETHButton>
-      <div>
-        <h2>Connect</h2>
-        {connectors.map((connector) => (
-          <button
-            key={connector.uid}
-            onClick={() => connect({ connector })}
-            type="button"
-          >
-            {connector.name}
-          </button>
-        ))}
-        <div>{status}</div>
-        <div>{error?.message}</div>
-      </div>
-      <hr />
-      <TokenButton></TokenButton>
-    </>
+    // 给最外层容器添加 relative 和 z-index 创建堆叠上下文
+    <div className="relative min-h-screen bg-dark-light text-gray-900 p-6">
+      <Header />
+      <ThreeCanvas />
+      {/* 确保 main 有更高的 z-index */}
+      <main className="relative max-w-4xl mx-auto mt-32 z-1">
+        <BuySection />
+        <section>
+          <CourseList></CourseList>
+        </section>
+      </main>
+      {/* 给 Footer 添加相对定位和 z-index */}
+      <Footer />
+    </div>
   );
 }
-
 export default App;

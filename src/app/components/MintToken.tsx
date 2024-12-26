@@ -4,12 +4,11 @@ import {
   useBalance,
   useSimulateContract,
 } from "wagmi";
-//合约地址
 const tokenAddress = "0xf3e8A51975180e3223e976569cbD222661756715";
 import tokenABI from "../abi/MetaCoin.json";
+
 export const TokenButton = () => {
   const { address: useAddress } = useAccount();
-
   const { data: tokenBlance } = useBalance({
     address: useAddress,
     token: tokenAddress,
@@ -25,21 +24,30 @@ export const TokenButton = () => {
   });
 
   const { data: hash, isSuccess, writeContract } = useWriteContract();
-  //
   const mintFun = async () => {
     if (useAddress) {
-      const result = await writeContract(contractData!.request);
+      await writeContract(contractData!.request);
     }
     if (isSuccess) {
       console.log("Mint Successful");
     }
   };
+
   return (
-    <div>
-      token balance : {tokenBlance?.formatted} {tokenBlance?.symbol}
-      <br />
-      <button onClick={mintFun}>Mint</button>
-      {hash && <div>Transaction Hash:{hash}</div>}
-    </div>
+    <section className="bg-white shadow-md rounded-lg p-6 mb-6">
+      <h2 className="text-2xl font-medium text-gray-700 mb-4">Mint Tokens</h2>
+      <p className="text-sm text-gray-600">
+        Token Balance: {tokenBlance?.formatted} {tokenBlance?.symbol}
+      </p>
+      <button
+        onClick={mintFun}
+        className="mt-4 px-6 py-2 bg-yellow-600 text-white rounded-lg shadow-md hover:bg-yellow-700"
+      >
+        Mint Token
+      </button>
+      {hash && (
+        <p className="mt-2 text-sm text-gray-600">Transaction Hash: {hash}</p>
+      )}
+    </section>
   );
 };
